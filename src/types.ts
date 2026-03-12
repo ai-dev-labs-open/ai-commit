@@ -4,6 +4,7 @@ export interface CliOptions {
   scope?: string;
   body?: boolean;
   maxSubjectLength?: number;
+  commit?: boolean;
 }
 
 export interface ProviderRequest {
@@ -36,6 +37,7 @@ export interface SuggestionProvider {
 
 export interface GitClient {
   getStagedDiff(cwd: string): Promise<string>;
+  commit(message: string, cwd: string): Promise<void>;
 }
 
 export interface ProviderConfig {

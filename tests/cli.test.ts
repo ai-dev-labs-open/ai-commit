@@ -11,7 +11,7 @@ class MemoryWriter {
   }
 }
 
-function createGitClient(diff: string | Error): GitClient {
+function createGitClient(diff: string | Error, commitFn?: (message: string) => Promise<void>): GitClient {
   return {
     async getStagedDiff(): Promise<string> {
       if (diff instanceof Error) {
@@ -19,6 +19,11 @@ function createGitClient(diff: string | Error): GitClient {
       }
 
       return diff;
+    },
+    async commit(message: string): Promise<void> {
+      if (commitFn) {
+        return commitFn(message);
+      }
     }
   };
 }
@@ -199,5 +204,88 @@ describe("runCli", () => {
 
     expect(exitCode).toBe(0);
     expect(stdout.value).toBe("fix(parser): handle empty responses\n");
+  });
+
+  it("runs git commit when --commit flag is passed", async () => {
+    const stdout = new MemoryWriter();
+    const committed: string[] = [];
+    const exitCode = await runCli(
+      ["node", "ai-commit", "--commit"],
+      {
+        env: { ANTHROPIC_API_KEY: "test-key" },
+        stdout,
+        stderr: new MemoryWriter(),
+        gitClient: createGitClient(
+          "diff --git a/a.ts b/a.ts\n+hello",
+          async (msg) => { committed.push(msg); }
+        ),
+        providerFactory: createProvider({
+          type: "feat",
+          scope: "cli",
+          subject: "add commit flag",
+          body: null,
+          rawText: ""
+        })
+      }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(committed).toHaveLength(1);
+    expect(committed[0]).toBe("feat(cli): add commit flag");
+    expect(stdout.value).toBe("feat(cli): add commit flag\n");
+  });
+
+  it("fails and returns non-zero exit code when git commit fails", async () => {
+    const stderr = new MemoryWriter();
+    const exitCode = await runCli(
+      ["node", "ai-commit", "--commit"],
+      {
+        env: { ANTHROPIC_API_KEY: "test-key" },
+        stdout: new MemoryWriter(),
+        stderr,
+        gitClient: createGitClient(
+          "diff --git a/a.ts b/a.ts\n+hello",
+          async () => {
+            throw new CliError("git commit failed: nothing to commit", "COMMIT_FAILED");
+          }
+        ),
+        providerFactory: createProvider({
+          type: "fix",
+          scope: null,
+          subject: "patch bug",
+          body: null,
+          rawText: ""
+        })
+      }
+    );
+
+    expect(exitCode).toBe(1);
+    expect(stderr.value).toContain("git commit failed");
+  });
+
+  it("does not run git commit when --commit flag is absent", async () => {
+    const committed: string[] = [];
+    const exitCode = await runCli(
+      ["node", "ai-commit"],
+      {
+        env: { ANTHROPIC_API_KEY: "test-key" },
+        stdout: new MemoryWriter(),
+        stderr: new MemoryWriter(),
+        gitClient: createGitClient(
+          "diff --git a/a.ts b/a.ts\n+hello",
+          async (msg) => { committed.push(msg); }
+        ),
+        providerFactory: createProvider({
+          type: "chore",
+          scope: null,
+          subject: "update deps",
+          body: null,
+          rawText: ""
+        })
+      }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(committed).toHaveLength(0);
   });
 });

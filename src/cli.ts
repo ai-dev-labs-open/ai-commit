@@ -60,6 +60,7 @@ export async function runCli(argv = process.argv, dependencies: CliDependencies 
       "Limit the maximum subject length.",
       parsePositiveIntegerOption
     )
+    .option("--commit", "Run git commit -m with the generated message.")
     .action(async (options: CliOptions) => {
       try {
         const suggestion = await generateCommitSuggestion(options, {
@@ -68,6 +69,12 @@ export async function runCli(argv = process.argv, dependencies: CliDependencies 
           gitClient,
           providerFactory
         });
+
+        if (options.commit) {
+          await gitClient.commit(suggestion.fullMessage, cwd());
+          stdout.write(`${suggestion.fullMessage}\n`);
+          return;
+        }
 
         if (options.json) {
           stdout.write(`${JSON.stringify(suggestion, null, 2)}\n`);
