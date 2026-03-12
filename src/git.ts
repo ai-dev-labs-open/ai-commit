@@ -132,6 +132,18 @@ export function createGitClient(execFileFn: ExecFileFn = defaultExecFile): GitCl
       }
 
       return diff;
+    },
+
+    async commit(message: string, cwd: string): Promise<void> {
+      try {
+        await execFileFn("git", ["commit", "-m", message], { cwd });
+      } catch (error) {
+        const stderr = (error as { stderr?: string }).stderr?.trim() ?? "";
+        throw new CliError(
+          `git commit failed${stderr ? `: ${stderr}` : "."}`,
+          "COMMIT_FAILED"
+        );
+      }
     }
   };
 }

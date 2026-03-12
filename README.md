@@ -84,6 +84,12 @@ Omit the body:
 ai-commit --no-body
 ```
 
+Commit immediately with the generated message (opt-in):
+
+```bash
+ai-commit --commit
+```
+
 See [`examples/sample-staged-diff.patch`](examples/sample-staged-diff.patch) and [`examples/expected-output.txt`](examples/expected-output.txt) for a minimal fixture.
 
 ## JSON Mode
@@ -109,7 +115,6 @@ Example response:
 ## Roadmap
 
 - optional Git hook integration
-- optional flag to run `git commit`
 - more model providers behind a stable interface
 - PR and changelog generation
 
