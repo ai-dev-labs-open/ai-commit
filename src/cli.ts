@@ -72,8 +72,6 @@ export async function runCli(argv = process.argv, dependencies: CliDependencies 
 
         if (options.commit) {
           await gitClient.commit(suggestion.fullMessage, cwd());
-          stdout.write(`${suggestion.fullMessage}\n`);
-          return;
         }
 
         if (options.json) {

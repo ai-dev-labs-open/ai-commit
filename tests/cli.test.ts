@@ -263,6 +263,36 @@ describe("runCli", () => {
     expect(stderr.value).toContain("git commit failed");
   });
 
+  it("prints JSON and commits when both --commit and --json are passed", async () => {
+    const stdout = new MemoryWriter();
+    const committed: string[] = [];
+    const exitCode = await runCli(
+      ["node", "ai-commit", "--commit", "--json"],
+      {
+        env: { ANTHROPIC_API_KEY: "test-key" },
+        stdout,
+        stderr: new MemoryWriter(),
+        gitClient: createGitClient(
+          "diff --git a/a.ts b/a.ts\n+hello",
+          async (msg) => { committed.push(msg); }
+        ),
+        providerFactory: createProvider({
+          type: "feat",
+          scope: "api",
+          subject: "return json after commit",
+          body: null,
+          rawText: ""
+        })
+      }
+    );
+
+    expect(exitCode).toBe(0);
+    expect(committed).toHaveLength(1);
+    const parsed = JSON.parse(stdout.value);
+    expect(parsed.type).toBe("feat");
+    expect(parsed.subject).toBe("return json after commit");
+  });
+
   it("does not run git commit when --commit flag is absent", async () => {
     const committed: string[] = [];
     const exitCode = await runCli(

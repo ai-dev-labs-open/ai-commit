@@ -63,3 +63,43 @@ describe("createGitClient", () => {
     await expect(gitClient.getStagedDiff("/tmp/repo")).rejects.toThrow("No staged changes found.");
   });
 });
+
+describe("createGitClient commit", () => {
+  it("resolves when git commit exits successfully", async () => {
+    const execFileFn: ExecFileFn = async (_file, _args) => ({ stdout: "[main abc1234] feat: add thing\n", stderr: "" });
+    const gitClient = createGitClient(execFileFn);
+
+    await expect(gitClient.commit("feat: add thing", "/tmp/repo")).resolves.toBeUndefined();
+  });
+
+  it("throws CliError with COMMIT_FAILED when git commit fails", async () => {
+    const execFileFn: ExecFileFn = async (_file, args) => {
+      if (args[0] === "commit") {
+        throw Object.assign(new Error("git error"), { stderr: "nothing to commit, working tree clean" });
+      }
+
+      return { stdout: "", stderr: "" };
+    };
+    const gitClient = createGitClient(execFileFn);
+
+    const error = await gitClient.commit("feat: add thing", "/tmp/repo").catch((e) => e);
+
+    expect(error.code).toBe("COMMIT_FAILED");
+    expect(error.message).toContain("nothing to commit");
+  });
+
+  it("passes the message as a -m argument", async () => {
+    const calls: string[][] = [];
+    const execFileFn: ExecFileFn = async (_file, args) => {
+      calls.push(args);
+      return { stdout: "", stderr: "" };
+    };
+    const gitClient = createGitClient(execFileFn);
+
+    await gitClient.commit("fix(parser): correct edge case", "/tmp/repo");
+
+    const commitCall = calls.find((args) => args[0] === "commit");
+
+    expect(commitCall).toEqual(["commit", "-m", "fix(parser): correct edge case"]);
+  });
+});
