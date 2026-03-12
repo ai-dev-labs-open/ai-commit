@@ -21,14 +21,22 @@ This repository is also designed to be a credible, maintainable open-source CLI:
 - examples and tests
 - npm-ready packaging
 
-## Quick Start
+## Installation
+
+From npm (once published):
 
 ```bash
-npm install
-export ANTHROPIC_API_KEY=your_api_key
-npm run build
-git add <files>
-node dist/cli.js
+npm install -g ai-commit
+export ANTHROPIC_API_KEY=sk-ant-...
+```
+
+From source:
+
+```bash
+git clone https://github.com/ai-dev-labs-open/ai-commit.git
+cd ai-commit
+npm install && npm run build
+export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 Example output:
@@ -55,34 +63,35 @@ Defaults:
 - model: `claude-3-5-sonnet-latest`
 - max subject length: `72`
 
-## Example Usage
+## Usage
 
-Generate a standard suggestion:
+Generate a suggestion for your staged changes:
 
 ```bash
-node dist/cli.js
+git add <files>
+ai-commit
 ```
 
 Force a type and scope:
 
 ```bash
-node dist/cli.js --type feat --scope cli
+ai-commit --type feat --scope cli
 ```
 
 Omit the body:
 
 ```bash
-node dist/cli.js --no-body
+ai-commit --no-body
 ```
 
-See [`examples/sample-staged-diff.patch`](/Users/levan/Documents/GitHub/ai-commit/examples/sample-staged-diff.patch) and [`examples/expected-output.txt`](/Users/levan/Documents/GitHub/ai-commit/examples/expected-output.txt) for a minimal fixture.
+See [`examples/sample-staged-diff.patch`](examples/sample-staged-diff.patch) and [`examples/expected-output.txt`](examples/expected-output.txt) for a minimal fixture.
 
 ## JSON Mode
 
 Use `--json` for automation-friendly output:
 
 ```bash
-node dist/cli.js --json
+ai-commit --json
 ```
 
 Example response:

@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Generate conventional commit suggestions from staged Git changes using Claude.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ai-dev-labs-open/ai-commit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ai-dev-labs-open/ai-commit/issues"
+  },
+  "homepage": "https://github.com/ai-dev-labs-open/ai-commit#readme",
   "bin": {
     "ai-commit": "./dist/cli.js"
   },
