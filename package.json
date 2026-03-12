@@ -1,0 +1,42 @@
+{
+  "name": "ai-commit",
+  "version": "0.1.0",
+  "description": "Generate conventional commit suggestions from staged Git changes using Claude.",
+  "license": "MIT",
+  "bin": {
+    "ai-commit": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup src/cli.ts --format cjs --dts --clean --out-dir dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "cli",
+    "anthropic",
+    "claude",
+    "conventional-commits"
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "commander": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  }
+}
+

@@ -1,0 +1,16 @@
+diff --git a/src/cli.ts b/src/cli.ts
+index a1b2c3d..d4e5f6a 100644
+--- a/src/cli.ts
++++ b/src/cli.ts
+@@ -4,6 +4,10 @@ export async function runCli() {
+   const program = new Command();
+   program.name("ai-commit");
+ 
++  program.option("--json", "Print a JSON object instead of plain text.");
++  program.option("--scope <scope>", "Force the conventional commit scope.");
++  program.option("--type <type>", "Force the conventional commit type.");
++
+   program.action(async () => {
+     // ...
+   });
+

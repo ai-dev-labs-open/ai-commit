@@ -1,0 +1,4 @@
+feat(cli): add JSON and scope flags
+
+Expose structured output and allow callers to pin the commit scope.
+
