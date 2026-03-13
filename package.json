@@ -38,6 +38,7 @@
   ],
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@google/genai": "^1.45.0",
     "commander": "^14.0.1"
   },
   "devDependencies": {
@@ -47,4 +48,3 @@
     "vitest": "^4.0.0"
   }
 }
-
